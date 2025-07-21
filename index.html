@@ -3,107 +3,128 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title id="pageTitle">Current time</title>
-
-    <style id="day-theme">
-        :root{
-            --bg-start:#ffd6e8;--bg-end:#e2d1f9;
-            --glass-bg:rgba(255,255,255,.35);--glass-border:rgba(255,255,255,.4);
-            --shadow:rgba(31,38,135,.25);--clock-color:#000;
-            --date-color:#222;--week-color:#333;--text-shadow:none;
-        }
-    </style>
-
-    <style id="night-theme" disabled>
-        :root{
-            --bg-start:#667eea;--bg-end:#764ba2;
-            --glass-bg:rgba(255,255,255,.1);--glass-border:rgba(255,255,255,.18);
-            --shadow:rgba(31,38,135,.37);--clock-color:#fff;
-            --date-color:#e0e0e0;--week-color:#c0c0c0;--text-shadow:0 0 10px rgba(255,255,255,.5);
-        }
-    </style>
+    <title id="pageTitle">Clock</title>
 
     <style>
-        body{
-            margin:0;padding:0;display:flex;justify-content:center;align-items:center;
-            min-height:100vh;
-            background:linear-gradient(135deg,var(--bg-start) 0%,var(--bg-end) 100%);
-            font-family:Arial,Helvetica,sans-serif;transition:background .5s;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 1.5s ease;
         }
-        .clock-container{
-            text-align:center;background:var(--glass-bg);padding:40px;border-radius:20px;
-            backdrop-filter:blur(10px);box-shadow:0 8px 32px var(--shadow);
-            border:1px solid var(--glass-border);transition:background .5s,box-shadow .5s;
+        .clock-container {
+            text-align: center;
+            background: var(--glass-bg);
+            padding: 40px 60px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--shadow);
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s ease;
         }
-        .clock{font-size:72px;font-weight:bold;color:var(--clock-color);text-shadow:var(--text-shadow);letter-spacing:3px;margin-bottom:20px;font-family:'Courier New',monospace;}
-        .date{font-size:24px;color:var(--date-color);margin-bottom:10px;}
-        .weekday{font-size:20px;color:var(--week-color);text-transform:uppercase;letter-spacing:2px;}
-        @media(max-width:600px){
-            .clock{font-size:48px;}
-            .date{font-size:18px;}
-            .weekday{font-size:16px;}
+        .clock {
+            font-size: 72px;
+            font-weight: bold;
+            color: var(--clock-color);
+            text-shadow: var(--text-shadow);
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
         }
+        .date {
+            font-size: 24px;
+            color: var(--date-color);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .weekday {
+            font-size: 20px;
+            color: var(--week-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+        @media (max-width: 600px) {
+            .clock { font-size: 48px; }
+            .date { font-size: 18px; }
+            .weekday { font-size: 16px; }
+            .clock-container { padding: 30px 20px; }
+        }
+    </style>
+
+    <style id="morning-theme">
+        body{background:linear-gradient(135deg,#65badc 0%,#b999ef 100%)}
+        :root{--glass-bg:rgba(255,252,245,.65);--glass-border:rgba(255,255,255,.7);--shadow:rgba(255,163,77,.12);--clock-color:#5a4c66;--date-color:#7a6a87;--week-color:#7a6a87;--text-shadow:0 1px 3px rgba(0,0,0,.04)}
+    </style>
+    <style id="day-theme">
+        body{background:linear-gradient(135deg,#ffd6e8 0%,#e2d1f9 100%)}
+        :root{--glass-bg:rgba(255,255,255,.35);--glass-border:rgba(255,255,255,.4);--shadow:rgba(31,38,135,.25);--clock-color:#000;--date-color:#222;--week-color:#333;--text-shadow:none}
+    </style>
+    <style id="dusk-theme">
+        body{background:linear-gradient(135deg,#fcddb4 0%,#f3be63 33%,#ff8c33 100%)}
+        :root{--glass-bg:rgba(255,252,245,.65);--glass-border:rgba(255,255,255,.7);--shadow:rgba(255,163,77,.12);--clock-color:#8c6e5a;--date-color:#a38b7a;--week-color:#a38b7a;--text-shadow:0 1px 3px rgba(0,0,0,.04)}
+    </style>
+    <style id="night-theme">
+        body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+        :root{--glass-bg:rgba(255,255,255,.1);--glass-border:rgba(255,255,255,.18);--shadow:rgba(31,38,135,.37);--clock-color:#fff;--date-color:#e0e0e0;--week-color:#c0c0c0;--text-shadow:0 0 10px rgba(255,255,255,.5)}
     </style>
 </head>
 
 <body>
     <div class="clock-container">
-        <div class="date"  id="date">2025年7月21日</div>
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="weekday" id="weekday">星期一</div>
+        <div class="date"   id="date"></div>
+        <div class="clock"  id="clock"></div>
+        <div class="weekday" id="weekday"></div>
     </div>
 
     <script>
-        const i18n = {
-            zh:{
-                title:'当前时间',
-                weekdays:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
-                formatDate: (y,m,d) => `${y}年${m}月${d}日`
-            },
-            en:{
-                title:'Current time',
-                weekdays:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-                formatDate: (y,m,d) => `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
-            }
-        };
-
-        /* ========= 语言检测 ========= */
-        const lang = navigator.language.startsWith('en') ? 'en' : 'zh';
-        const locale = i18n[lang];
-
-        /* ========= 主题切换 ========= */
-        const daySheet  = document.getElementById('day-theme');
-        const nightSheet= document.getElementById('night-theme');
-        function applyTheme(){
-            const h = new Date().getHours();
-            const isDay = h >= 6 && h < 18;
-            daySheet.disabled  = !isDay;
-            nightSheet.disabled =  isDay;
+        function currentLocale() {
+            return navigator.language.startsWith('zh') ? 'zh-CN' : 'en-US';
         }
 
-        function updateClock(){
+        function localizedDateTime(date, locale) {
+            const dateStr = new Intl.DateTimeFormat(locale, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).format(date);
+
+            const weekdayStr = new Intl.DateTimeFormat(locale, {
+                weekday: 'long'
+            }).format(date);
+
+            return { date: dateStr, weekday: weekdayStr };
+        }
+
+        function updateClock() {
             const now = new Date();
-            const hh = String(now.getHours()).padStart(2,'0');
-            const mm = String(now.getMinutes()).padStart(2,'0');
-            const ss = String(now.getSeconds()).padStart(2,'0');
-            const y  = now.getFullYear();
-            const m  = now.getMonth()+1;
-            const d  = now.getDate();
-            const wd = locale.weekdays[now.getDay()];
+            const locale = currentLocale();
+            const { date, weekday } = localizedDateTime(now, locale);
 
-            document.title = `${locale.title} ${hh}:${mm}`;
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
 
-            document.getElementById('clock').textContent   = `${hh}:${mm}:${ss}`;
-            document.getElementById('date').textContent    = locale.formatDate(y,m,d);
-            document.getElementById('weekday').textContent = wd;
+            document.getElementById('clock').textContent   = `${hh}:${mm}:${String(now.getSeconds()).padStart(2,'0')}`;
+            document.getElementById('date').textContent    = date;
+            document.getElementById('weekday').textContent = weekday;
+
+            document.getElementById('pageTitle').textContent =
+                locale === 'zh-CN' ? `当前时间：${hh}:${mm}` : `Current time: ${hh}:${mm}`;
+        }
+
+        function applyTheme() {
+            const h = new Date().getHours();
+            const themes = ['morning','day','dusk','night'];
+            themes.forEach(t => document.getElementById(`${t}-theme`).disabled = true);
+            const active = h>=4&&h<8 ? 'morning' : h>=8&&h<17 ? 'day' : h>=17&&h<19 ? 'dusk' : 'night';
+            document.getElementById(`${active}-theme`).disabled = false;
         }
 
         applyTheme();
         updateClock();
-        setInterval(()=>{
-            updateClock();
-            applyTheme();
-        },1000);
+        setInterval(() => { updateClock(); applyTheme(); }, 1000);
     </script>
 </body>
 </html>
