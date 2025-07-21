@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>动态时钟 - 自动昼夜模式</title>
+    
+    <title id="pageTitle">Current time</title>
 
-    <!-- 白昼 CSS 变量 -->
     <style id="day-theme">
         :root {
             --bg-start: #ffd6e8;
@@ -20,7 +20,6 @@
         }
     </style>
 
-    <!-- 黑夜 CSS 变量 -->
     <style id="night-theme" disabled>
         :root {
             --bg-start: #667eea;
@@ -35,7 +34,6 @@
         }
     </style>
 
-    <!-- 统一样式 -->
     <style>
         body {
             margin: 0;
@@ -99,7 +97,7 @@
     </div>
 
     <script>
-        /* 主题切换逻辑 */
+      
         const daySheet  = document.getElementById('day-theme');
         const nightSheet = document.getElementById('night-theme');
 
@@ -110,7 +108,6 @@
             nightSheet.disabled =  isDay;
         }
 
-        /* 时钟更新逻辑 */
         function updateClock() {
             const now = new Date();
             const hours   = String(now.getHours()).padStart(2, '0');
@@ -124,17 +121,19 @@
             const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
             const weekday = weekdays[now.getDay()];
 
-            document.getElementById('clock').textContent   = `${hours}:${minutes}:${seconds}`;
+            const timeStr = `${hours}:${minutes}:${seconds}`;
+            document.title = `Current time ${timeStr}`;
+
+            document.getElementById('clock').textContent   = timeStr;
             document.getElementById('date').textContent    = `${year}年${month}月${day}日`;
             document.getElementById('weekday').textContent = weekday;
         }
 
-        /* 初始化 & 定时刷新 */
         applyTheme();
         updateClock();
         setInterval(() => {
             updateClock();
-            applyTheme();   // 如果跨 6 点/18 点会自动切换
+            applyTheme();  
         }, 1000);
     </script>
 </body>
